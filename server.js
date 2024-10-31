@@ -11,6 +11,7 @@ const userRoute = require("./routers/userRoute");
 const postRoute = require("./routers/postRoute");
 const commentRoute = require("./routers/commentRoute");
 const PORT = process.env.PORT || 6000;
+const path = require("path");
 
 // Connect to Database
 connectDB();
@@ -22,18 +23,18 @@ app.use(morgan("dev")); // Logging middleware
 app.use(express.json()); // Parses incoming JSON requests
 
 // CORS Configuration
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Your frontend URL
-    credentials: true, // Enable credentials
-  })
-);
+app.use(cors());
 app.options("*", cors()); // Handle preflight requests for all routes
 
 // Routes
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/posts", postRoute);
 app.use("/api/v1/comment", commentRoute);
+
+app.get("/", (req, res) => {
+  app.use(express.static(path.resolve(__dirname, "frontend", "dist")));
+  res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+});
 
 // Start the server
 app.listen(PORT, () => {
